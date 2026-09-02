@@ -56,6 +56,37 @@ public class Tasks {
         return false;
     }
 
+    //метод к Задаче №8
+    public static String getEvenInRange(int start, int end) {
+        if (start > end) {return "";}
+        String result = "";
+        for (int i = start; i <= end; i++) {
+            if (i % 2 == 0) {
+                if (!result.isEmpty()) {
+                    result = result + " ";
+                }
+                result = result + i;
+            }
+        }
+        return result;
+    }
+
+    //метод к Задаче №9
+    public static int findMax(int[] arr){
+        if (arr == null || arr.length==0){throw new IllegalArgumentException("Ошбика!Пустой массив");}
+        int max= arr[0];
+        for (int i=1; i< arr.length;i++){
+            if (arr[i]>max){
+                max=arr[i];
+            }
+        }
+        return max;
+    }
+
+    //метод к Задаче №10
+
+
+
 
     public static void main (String[] args){
         System.out.println("Задача №1 проверка 1 = " + isEven(10));
@@ -79,6 +110,9 @@ public class Tasks {
         System.out.println("Задача №7 проверка 2 = " + hasBug(test2));
         String[] test3 = {"Word","phoEnix","BUG"};
         System.out.println("Задача №7 проверка 2 = " + hasBug(test3));
+        System.out.println("Задача №8 проверка 1 = " + getEvenInRange(10,30));
+        int[] test4 = {1,4,6,9,35,45,23};
+        System.out.println("Задача №9 проверка 1 = " + findMax(test4));
     }
 }
 
