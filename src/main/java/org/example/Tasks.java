@@ -1,5 +1,9 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Tasks {
 
     //метод к Задаче №1
@@ -84,6 +88,41 @@ public class Tasks {
     }
 
     //метод к Задаче №10
+    public static String[] reverse(String[] arr){
+        if (arr==null ||arr.length==0){return arr;}
+        String[] reversed = new String[arr.length];
+        for (int i=0; i< arr.length; i++){
+            reversed[i] = arr[arr.length - 1 - i];
+        }
+        return reversed;
+    }
+
+    //метод к Задаче №11
+    public static double calcAverage (List<Integer>list){
+        if (list==null || list.isEmpty()){
+            return 0.0;
+        }
+        int sum=0;
+        for (Integer num :list){
+            sum+=num;
+        }
+        return (double) sum/list.size();
+    }
+
+    //метод к Задаче №12
+    public static List<String> removeSpecificName(List<String> list, String nameToRemove) {
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        List<String> result = new ArrayList<>();
+        for (String name: list){
+            if (!name.equals(nameToRemove)){
+                result.add(name);
+            }
+        }
+        return result;
+    }
+
 
 
 
@@ -113,6 +152,15 @@ public class Tasks {
         System.out.println("Задача №8 проверка 1 = " + getEvenInRange(10,30));
         int[] test4 = {1,4,6,9,35,45,23};
         System.out.println("Задача №9 проверка 1 = " + findMax(test4));
+        String[] straight= {"One","Two","Three"};
+        String[] reversed = reverse(straight);
+        System.out.println("Задача №10 проверка 1. обычный массив: "+ Arrays.toString(straight));
+        System.out.println("Задача №10 проверка 2. обратный массив: "+ Arrays.toString(reversed));
+        List<Integer>numbers = List.of(1,2,3,4,5);
+        System.out.println("Задача №11 проверка 1 = " + calcAverage(numbers));
+        List <String> names = List.of("Alice","Mary","Igor","Poly","Eva");
+        System.out.println("Задача №12 проверка 1. Полный список: " + names);
+        System.out.println("После удаления 'Bob': " + removeSpecificName(names, "Mary"));
     }
 }
 
