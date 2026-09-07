@@ -160,7 +160,7 @@ public class Tasks {
         System.out.println("Задача №11 проверка 1 = " + calcAverage(numbers));
         List <String> names = List.of("Alice","Mary","Igor","Poly","Eva");
         System.out.println("Задача №12 проверка 1. Полный список: " + names);
-        System.out.println("После удаления 'Bob': " + removeSpecificName(names, "Mary"));
+        System.out.println("Задача №12 проверка 2. После удаления 'Mary': " + removeSpecificName(names, "Mary"));
     }
 }
 
