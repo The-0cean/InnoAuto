@@ -163,4 +163,3 @@ public class Tasks {
         System.out.println("Задача №12 проверка 2. После удаления 'Mary': " + removeSpecificName(names, "Mary"));
     }
 }
-
