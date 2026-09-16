@@ -1,0 +1,13 @@
+score,grade
+0,E
+20,E
+21,D
+40,D
+41,C
+60,C
+61,B
+80,B
+81,A
+100,A
+-1,Error
+101,Error

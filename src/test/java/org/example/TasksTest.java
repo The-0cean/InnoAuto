@@ -16,8 +16,7 @@ public class TasksTest {
     private static final Random RANDOM = new Random();
     @BeforeEach
     public void beforeEachTest(){
-        System.out.println("========================");
-        System.out.println("Test method start");
+        System.out.println("========================Test method start");
     }
 
     @AfterEach

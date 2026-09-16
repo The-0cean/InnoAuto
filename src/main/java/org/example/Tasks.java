@@ -3,6 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Tasks {
 
@@ -54,8 +55,10 @@ public class Tasks {
 
     //метод к Задаче №7
     public static boolean hasBug(String[] messages){
+        if (messages == null) {                               // а вдруг вместо массива нам подсунули пустоту?
+            return false;}
         for (int i = 0; i < messages.length; i++){
-            if (messages[i].equalsIgnoreCase("Bug")){return true;}
+            if ("Bug".equalsIgnoreCase(messages[i])){return true;}
         }
         return false;
     }
@@ -116,7 +119,7 @@ public class Tasks {
         }
         List<String> result = new ArrayList<>();
         for (String name: list){
-            if (!name.equals(nameToRemove)){
+            if (!Objects.equals(name, nameToRemove)) {
                 result.add(name);
             }
         }
