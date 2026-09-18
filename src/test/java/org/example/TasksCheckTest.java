@@ -1,115 +1,49 @@
 package org.example;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-
-import java.util.List;
-
 import org.junit.jupiter.api.RepeatedTest;
-
-import java.util.ArrayList;
-
-import java.util.Random;
-
 import org.junit.jupiter.params.ParameterizedTest;
-
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import org.junit.jupiter.params.provider.CsvFileSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TasksCheckTest {
     private static final Random RANDOM = new Random();
-    @Test
-    public void testFindMax(){
-        int[]arr = {3, 17, 5};
-        int expected =  17;
-        int actual = Tasks.findMax(arr);
-        if (actual == expected){
-            System.out.println("TEST PASSED: findMax returned " + actual);
-        }
-        else {
-            System.out.println("TEST FAILED: expected " + expected + ", got " + actual);
-        }
-    }
-
-    @Test
-    public void testHasBug(){
-        String[] messages = {"All good", "BUG", "Moving on"};
-        boolean expected = true;
-        boolean actual = Tasks.hasBug(messages);
-
-        if (actual == expected){
-            System.out.println("TEST PASSED: hasBug returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: expected " + expected + ", got " + actual);
-        }
-    }
-
-    @Test
-    public void testReverse(){
-        String[] input = {"One", "Two", "Zero"};
-        String[] expected = {"Zero", "Two", "One"};
-        String[] actual = Tasks.reverse(input);
-        if (Arrays.equals(actual, expected)) {
-            System.out.println("TEST PASSED: reverse returned " + Arrays.toString(actual));
-        } else {
-            System.out.println("TEST FAILED: expected " + Arrays.toString(expected)
-                    + ", got " + Arrays.toString(actual));
-        }
-    }
-
-    @Test
-    public void testRemoveSpecificName() {
-        List<String> names = List.of("Alice", "Mary", "Igor");           // исходный список имён
-        List<String> expected = List.of("Alice", "Igor");                // ждём тот же список, но без Mary
-        List<String> actual = Tasks.removeSpecificName(names, "Mary");   // убираем Mary
-
-        if (expected.equals(actual)) {                                   // списки сравниваем через .equals()
-            System.out.println("TEST PASSED: removeSpecificName returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: expected " + expected + ", got " + actual);
-        }
-    }
 
     @RepeatedTest(10)
     public void testIsEven() {
         int n = RANDOM.nextInt(100) + 1;
         boolean expected = (n % 2 == 0);
-        boolean actual = Tasks.isEven(n);
 
-        if (actual == expected) {
-            System.out.println("TEST PASSED: isEven(" + n + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: isEven(" + n + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.isEven(n))
+                .as("isEven(%d)", n)
+                .isEqualTo(expected);
     }
 
     @RepeatedTest(10)
     public void testIsPositive() {
         int n = RANDOM.nextInt(201) - 100;
         boolean expected = (n >= 0);
-        boolean actual = Tasks.isPositive(n);
 
-        if (actual == expected) {
-            System.out.println("TEST PASSED: isPositive(" + n + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: isPositive(" + n + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.isPositive(n))
+                .as("isPositive(%d)", n)
+                .isEqualTo(expected);
     }
 
     @RepeatedTest(10)
     public void testSumToN() {
         int n = RANDOM.nextInt(100) + 1;
         int expected = n * (n + 1) / 2;
-        int actual = Tasks.sumToN(n);
 
-        if (actual == expected) {
-            System.out.println("TEST PASSED: sumToN(" + n + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: sumToN(" + n + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.sumToN(n))
+                .as("sumToN(%d)", n)
+                .isEqualTo(expected);
     }
 
     @RepeatedTest(10)
@@ -122,71 +56,125 @@ public class TasksCheckTest {
             numbers.add(value);
         }
 
-        double expected = value;
-        double actual = Tasks.calcAverage(numbers);
-
-        if (actual == expected) {
-            System.out.println("TEST PASSED: calcAverage(" + numbers + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: calcAverage(" + numbers + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.calcAverage(numbers))
+                .as("calcAverage(%s)", numbers)
+                .isEqualTo((double) value);
     }
+
+    @RepeatedTest(10)
+    public void testFindMax() {
+        int size = RANDOM.nextInt(5) + 1;
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RANDOM.nextInt(201) - 100;
+        }
+        int expected = Arrays.stream(arr).max().getAsInt();
+
+        assertThat(Tasks.findMax(arr))
+                .as("findMax(%s)", Arrays.toString(arr))
+                .isEqualTo(expected);
+    }
+
+    @RepeatedTest(10)
+    public void testHasBug() {
+        String[] messages = {"All good", "Moving on", "Almost done"};
+        boolean shouldHaveBug = RANDOM.nextBoolean();
+        if (shouldHaveBug) {
+            messages[RANDOM.nextInt(messages.length)] = "BUG";
+        }
+
+        assertThat(Tasks.hasBug(messages))
+                .as("hasBug(%s)", Arrays.toString(messages))
+                .isEqualTo(shouldHaveBug);
+    }
+
+    @RepeatedTest(10)
+    public void testReverse() {
+        int size = RANDOM.nextInt(4) + 2;
+        String[] source = new String[size];
+        for (int i = 0; i < size; i++) {
+            source[i] = "item" + RANDOM.nextInt(100);
+        }
+
+        List<String> expected = new ArrayList<>(Arrays.asList(source));
+        Collections.reverse(expected);
+
+        assertThat(Tasks.reverse(source))
+                .as("reverse(%s)", Arrays.toString(source))
+                .containsExactlyElementsOf(expected);
+    }
+
+    @RepeatedTest(10)
+    public void testRemoveSpecificName() {
+        List<String> pool = List.of("Alice", "Mary", "Igor", "Poly", "Eva");
+        String toRemove = pool.get(RANDOM.nextInt(pool.size()));
+
+        List<String> expected = pool.stream()
+                .filter(name -> !name.equals(toRemove))
+                .toList();
+
+        assertThat(Tasks.removeSpecificName(pool, toRemove))
+                .as("removeSpecificName(%s, '%s')", pool, toRemove)
+                .containsExactlyElementsOf(expected)
+                .doesNotContain(toRemove);
+    }
+
+    // ======== ГРУППА 2: данные из таблицы в коде ========
 
     @ParameterizedTest
     @CsvSource({
-            "19, Allowed",
-            "18, Denied",
             "0, Denied",
+            "1, Denied",
+            "17, Denied",
+            "18, Denied",
+            "19, Allowed",
+            "20, Allowed",
+            "50, Allowed",
+            "99, Allowed",
+            "100, Allowed",
+            "-5, Denied"
     })
     public void testCheckAccess(int age, String expected) {
-        String actual = Tasks.checkAccess(age);
-
-        if (expected.equals(actual)) {
-            System.out.println("TEST PASSED: checkAccess(" + age + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: checkAccess(" + age + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.checkAccess(age))
+                .as("checkAccess(%d)", age)
+                .isEqualTo(expected);
     }
 
     @ParameterizedTest
     @CsvSource({
-            "5, '5 4 3 2 1 Поехали!'",
+            "1, '1 Поехали!'",
+            "2, '2 1 Поехали!'",
             "3, '3 2 1 Поехали!'",
-            "1, '1 Поехали!'"
+            "4, '4 3 2 1 Поехали!'",
+            "5, '5 4 3 2 1 Поехали!'",
+            "6, '6 5 4 3 2 1 Поехали!'",
+            "7, '7 6 5 4 3 2 1 Поехали!'",
+            "8, '8 7 6 5 4 3 2 1 Поехали!'",
+            "9, '9 8 7 6 5 4 3 2 1 Поехали!'",
+            "10, '10 9 8 7 6 5 4 3 2 1 Поехали!'"
     })
     public void testBlastOff(int start, String expected) {
-        String actual = Tasks.blastOff(start);
-
-        if (expected.equals(actual)) {
-            System.out.println("TEST PASSED: blastOff(" + start + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: blastOff(" + start + ") expected [" + expected + "], got [" + actual + "]");
-        }
+        assertThat(Tasks.blastOff(start))
+                .as("blastOff(%d)", start)
+                .isEqualTo(expected);
     }
+
+    // ======== ГРУППА 3: данные из CSV-файлов ========
 
     @ParameterizedTest
     @CsvFileSource(resources = "/grades.csv", numLinesToSkip = 1)
     public void testGetGrade(int score, String expected) {
-        String actual = Tasks.getGrade(score);
-
-        if (expected.equals(actual)) {
-            System.out.println("TEST PASSED: getGrade(" + score + ") returned " + actual);
-        } else {
-            System.out.println("TEST FAILED: getGrade(" + score + ") expected " + expected + ", got " + actual);
-        }
+        assertThat(Tasks.getGrade(score))
+                .as("getGrade(%d)", score)
+                .isEqualTo(expected);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "/even-range.csv", numLinesToSkip = 1)
     public void testGetEvenInRange(int start, int end, String expected) {
-        String actual = Tasks.getEvenInRange(start, end);
-
-        if (expected.equals(actual)) {
-            System.out.println("TEST PASSED: getEvenInRange(" + start + ", " + end + ") returned [" + actual + "]");
-        } else {
-            System.out.println("TEST FAILED: getEvenInRange(" + start + ", " + end + ") expected ["
-                    + expected + "], got [" + actual + "]");
-        }
+        assertThat(Tasks.getEvenInRange(start, end))
+                .as("getEvenInRange(%d, %d)", start, end)
+                .isEqualTo(expected);
     }
-}
 
+}

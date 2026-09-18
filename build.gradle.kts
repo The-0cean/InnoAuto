@@ -20,6 +20,9 @@ dependencies {
 
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+
+    testImplementation("org.assertj:assertj-core:3.25.3")
 }
 
 tasks.test {
@@ -32,7 +35,7 @@ tasks.test {
 }
 
 tasks.register<Test>("runAllTests"){
-    useJUnitPlatform()
+    useJUnitPlatform() {excludeTags("failing")}
     testClassesDirs= sourceSets["test"].output.classesDirs
     classpath = sourceSets["test"].runtimeClasspath
     description = "Runs all tests of the Day 2 task 1"
@@ -54,4 +57,20 @@ tasks.register("printTestRunOver"){
 
 tasks.named("runAllTests"){
     finalizedBy("printTestRunOver")
+}
+
+tasks.register<Test>("runFailingDemo") {
+    useJUnitPlatform {
+        includeTags("failing")
+    }
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    description = "Демонстрация информативного падения ассерта"
+    group = "verification"
+    ignoreFailures = true
+    testLogging {
+        events("PASSED", "FAILED", "STANDARD_OUT")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
 }
