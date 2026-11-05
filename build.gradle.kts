@@ -23,6 +23,12 @@ dependencies {
     implementation("io.rest-assured:rest-assured:5.5.6")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+
+    testImplementation("com.codeborne:selenide:7.18.2")
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
 
 tasks.test {
@@ -83,6 +89,21 @@ tasks.register<Test>("runApiTests") {
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = sourceSets["test"].runtimeClasspath
     description = "Runs only API tests (server must be running on localhost:8080)"
+    group = "verification"
+    testLogging {
+        events("PASSED", "SKIPPED", "FAILED")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+tasks.register<Test>("runUiTests") {
+    useJUnitPlatform {
+        includeTags("ui")
+        excludeTags("failing")
+    }
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    description = "Runs only UI tests (server must be running on localhost:8080)"
     group = "verification"
     testLogging {
         events("PASSED", "SKIPPED", "FAILED")
