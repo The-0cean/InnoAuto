@@ -18,6 +18,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.open;
+import static org.example.config.ConfigProvider.CONFIG;
 
 @Tag("ui")
 public class CartDragAndDropTest {
@@ -25,8 +26,8 @@ public class CartDragAndDropTest {
     @BeforeEach
     public void setUp() {
         GoodsApi.deleteAllGoods();
-        Configuration.baseUrl = "http://localhost:8080";
-        Configuration.timeout = 5000;
+        Configuration.baseUrl = CONFIG.baseUrl();
+        Configuration.timeout = CONFIG.timeout();
     }
 
     @AfterEach

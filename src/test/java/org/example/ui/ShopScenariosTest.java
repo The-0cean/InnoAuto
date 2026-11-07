@@ -17,6 +17,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.open;
+import static org.example.config.ConfigProvider.CONFIG;
 
 // Задача 3 (вебинар): сценарии магазина на Selenide
 @Tag("ui")
@@ -25,8 +26,8 @@ public class ShopScenariosTest {
     @BeforeEach
     public void setUp() {
         GoodsApi.deleteAllGoods();
-        Configuration.baseUrl = "http://localhost:8080";
-        Configuration.timeout = 5000;
+        Configuration.baseUrl = CONFIG.baseUrl();
+        Configuration.timeout = CONFIG.timeout();
     }
 
     // 3.6: тестовые данные удаляются в @AfterEach
@@ -39,8 +40,8 @@ public class ShopScenariosTest {
     private void loginToAdmin() {
         open("/");
         $("a[href='/admin']").click();
-        $("#username").setValue("admin");
-        $("#password").setValue("secret123");
+        $("#username").setValue(CONFIG.adminLogin());
+        $("#password").setValue(CONFIG.adminPassword());
         $("button[type='submit']").click();
     }
 

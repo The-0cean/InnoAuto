@@ -20,6 +20,7 @@ import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.confirm;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.refresh;
+import static org.example.config.ConfigProvider.CONFIG;
 
 // Задача 2: те же кейсы на Selenide + проверка JS Alert
 @Tag("ui")
@@ -28,8 +29,8 @@ public class SelenideShopTest {
     @BeforeEach
     public void setUp() {
         GoodsApi.deleteAllGoods();
-        Configuration.baseUrl = "http://localhost:8080";
-        Configuration.timeout = 5000;
+        Configuration.baseUrl = CONFIG.baseUrl();
+        Configuration.timeout = CONFIG.timeout();
     }
 
     @AfterEach
@@ -56,7 +57,7 @@ public class SelenideShopTest {
     @Test
     public void goodAddedInAdminIsShownOnShowcase() {
         String name = "Кружка";
-        loginToAdmin("admin", "secret123");
+        loginToAdmin(CONFIG.adminLogin(), CONFIG.adminPassword());
 
         $("#n-name").setValue(name);
         $("#n-price").setValue("99");

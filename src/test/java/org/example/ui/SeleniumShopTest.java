@@ -14,12 +14,13 @@ import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.config.ConfigProvider.CONFIG;
 
 // Задача 1: UI-тесты магазина на «голом» Selenium
 @Tag("ui")
 public class SeleniumShopTest {
 
-    private static final String BASE_URL = "http://localhost:8080";
+    private static final String BASE_URL = CONFIG.baseUrl();
     private WebDriver driver;
 
 
@@ -27,7 +28,7 @@ public class SeleniumShopTest {
     public void setUp() {
         GoodsApi.deleteAllGoods();
         driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(CONFIG.timeout()));
     }
 
 
@@ -59,7 +60,7 @@ public class SeleniumShopTest {
     @Test
     public void goodAddedInAdminIsShownOnShowcase() {
         String name = "Кружка";
-        loginToAdmin("admin", "secret123");
+        loginToAdmin(CONFIG.adminLogin(), CONFIG.adminPassword());
 
         driver.findElement(By.id("n-name")).sendKeys(name);
         driver.findElement(By.id("n-price")).sendKeys("99");

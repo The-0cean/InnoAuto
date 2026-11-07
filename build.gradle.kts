@@ -24,6 +24,8 @@ dependencies {
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
 
+    implementation("org.aeonbits.owner:owner:1.0.12")
+
     testImplementation("com.codeborne:selenide:7.18.2")
 }
 
@@ -93,6 +95,7 @@ tasks.register<Test>("runApiTests") {
     testLogging {
         events("PASSED", "SKIPPED", "FAILED")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
     }
 }
 
@@ -108,5 +111,6 @@ tasks.register<Test>("runUiTests") {
     testLogging {
         events("PASSED", "SKIPPED", "FAILED")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
     }
 }
