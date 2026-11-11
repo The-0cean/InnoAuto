@@ -1,122 +1,85 @@
 package org.example.ui;
 
-import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.SelenideElement;
 import org.example.api.GoodsApi;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.ui.pages.AdminPage;
+import org.example.ui.pages.MainPage;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.value;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.closeWebDriver;
-import static com.codeborne.selenide.Selenide.open;
 import static org.example.config.ConfigProvider.CONFIG;
 
-// Задача 3 (вебинар): сценарии магазина на Selenide
 @Tag("ui")
-public class ShopScenariosTest {
+public class ShopScenariosTest extends BaseUiTest {
 
-    @BeforeEach
-    public void setUp() {
-        GoodsApi.deleteAllGoods();
-        Configuration.baseUrl = CONFIG.baseUrl();
-        Configuration.timeout = CONFIG.timeout();
-    }
-
-    // 3.6: тестовые данные удаляются в @AfterEach
-    @AfterEach
-    public void tearDown() {
-        closeWebDriver();
-        GoodsApi.deleteAllGoods();
-    }
-
-    private void loginToAdmin() {
-        open("/");
-        $("a[href='/admin']").click();
-        $("#username").setValue(CONFIG.adminLogin());
-        $("#password").setValue(CONFIG.adminPassword());
-        $("button[type='submit']").click();
-    }
-
-    private SelenideElement card(String name) {
-        return $(".product-card[data-name='" + name + "']");
-    }
-
-    // 3.1: три штуки товара в корзину, оплатить (≤ 300 ₽), проверить уведомление
     @Test
     public void orderOfThreeItemsIsAccepted() {
-        String name = "Ручка";
-        GoodsApi.addGood(name, 40);
+        GoodsApi.addGood("Ручка", 40);
 
-        open("/");
-        card(name).$("button[data-step='1']").click();
-        card(name).$("button[data-step='1']").click();
-        card(name).$(".qty-input").shouldHave(value("3"));
-        card(name).$("button[data-action='add-to-cart']").click();
-        $("#cart-count").shouldHave(exactText("3"));
+        MainPage mainPage = new MainPage().open()
+                .increaseCount("Ручка")
+                .increaseCount("Ручка");
+        mainPage.check().countInputHasValue("Ручка", 3);
 
-        $("#open-cart-btn").click();
-        $("#total-price").shouldHave(exactText("120"));
-        $("#makeOrder").click();
+        mainPage.addToCart("Ручка")
+                .check().cartCounterIs(3);
 
-        $$("#toast-container .toast")
-                .findBy(text("Заказ принят в обработку"))
-                .shouldBe(visible);
-        $("#main-title").shouldHave(exactText("Заказ успешно оформлен!"));
-        $("#cart-count").shouldHave(exactText("0"));
+        MainPage.CartPopup cart = mainPage.openCart();
+        cart.check()
+                .isOpened()
+                .totalPriceIs(120);
+
+        cart.makeOrder()
+                .check()
+                .notificationIsShown("Заказ принят в обработку")
+                .titleHasText("Заказ успешно оформлен!")
+                .cartCounterIs(0);
     }
 
-    // 3.2: несколько разных товаров — общая цена считается правильно
     @Test
     public void cartTotalIsSumOfPrices() {
         GoodsApi.addGood("Ручка", 40);
         GoodsApi.addGood("Тетрадь", 70);
         GoodsApi.addGood("Гиря", 120);
 
-        open("/");
-        card("Ручка").$("button[data-action='add-to-cart']").click();
-        card("Тетрадь").$("button[data-action='add-to-cart']").click();
-        card("Гиря").$("button[data-action='add-to-cart']").click();
+        MainPage mainPage = new MainPage().open()
+                .addToCart("Ручка")
+                .addToCart("Тетрадь")
+                .addToCart("Гиря");
 
-        $("#open-cart-btn").click();
-        $$("#cart-items .cart-item").shouldHave(size(3));
-        $("#total-price").shouldHave(exactText("230"));
+        mainPage.openCart()
+                .check()
+                .itemsCountIs(3)
+                .totalPriceIs(230);
     }
 
-    // 3.3: войти в админку, добавить товар, проверить уведомление
     @Test
     public void adminShowsNotificationAfterAdding() {
-        loginToAdmin();
+        AdminPage adminPage = new MainPage().open()
+                .clickAdminLink()
+                .loginAs(CONFIG.adminLogin(), CONFIG.adminPassword())
+                .addGood("Кружка", 99);
 
-        $("#n-name").setValue("Кружка");
-        $("#n-price").setValue("99");
-        $("#add-btn").click();
-
-        $(".toast").shouldHave(exactText("Товар успешно добавлен!"));
-        $("#tbody input[value='Кружка']").shouldBe(visible);
+        adminPage.check()
+                .notificationIsShown("Товар успешно добавлен!")
+                .goodIsInTable("Кружка");
     }
 
-    // 3.4: войти в админку, отредактировать товар, проверить изменения на витрине
     @Test
     public void editedGoodIsUpdatedOnShowcase() {
         int id = GoodsApi.addGood("Кружка", 99);
-        loginToAdmin();
 
-        $("#nm-" + id).setValue("Кружка XL");
-        $("#pr-" + id).setValue("111");
-        $("button[data-action='update'][data-id='" + id + "']").click();
-        $$(".toast").findBy(text("Товар #" + id + " обновлен")).shouldBe(visible);
+        AdminPage adminPage = new MainPage().open()
+                .clickAdminLink()
+                .loginAs(CONFIG.adminLogin(), CONFIG.adminPassword())
+                .changeName(id, "Кружка XL")
+                .changePrice(id, 111)
+                .clickSave(id);
+        adminPage.check().notificationIsShown("Товар #" + id + " обновлен");
 
-        $("a[href='/']").click();
-        SelenideElement editedCard = $(".product-card[data-id='" + id + "']");
-        editedCard.$("h4").shouldHave(exactText("Кружка XL"));
-        editedCard.$("h4 + div").shouldHave(exactText("111 ₽"));
+        adminPage.goToShop()
+                .check()
+                .productIsShown("Кружка XL")
+                .productPriceIs("Кружка XL", 111)
+                .productIsNotShown("Кружка");
     }
 }
